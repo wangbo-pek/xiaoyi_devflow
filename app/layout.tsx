@@ -1,16 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
-
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
+import ThemeProvider from "@/context/theme"
+import Navbar from "@/components/navigation/navbar"
 
 const inter = Inter({
   variable: "--font-inter",
@@ -35,11 +27,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${inter.className} ${spaceGrotesk.variable} antialiased`}
-      >
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.className} ${spaceGrotesk.variable} antialiased`}>
+        <ThemeProvider 
+        attribute="class" 
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+        >
+          <Navbar />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
