@@ -1,0 +1,15 @@
+export const techMap: Record<string, string> = {
+    "react": "devicon-react-plain",
+    "javascript": "devicon-javascript-plain",
+    "js": "devicon-javascript-plain",
+    "typescript": "devicon-typescript-plain",
+    "ts": "devicon-typescript-plain",
+    "nextjs": "devicon-nextjs-plain",
+    "nodejs": "devicon-nodejs-plain",
+    "express": "devicon-express-plain",
+    "mongodb": "devicon-mongodb-plain",
+    "mysql": "devicon-mysql-plain",
+    "postgresql": "devicon-postgresql-plain",
+    "docker": "devicon-docker-plain",
+    "reactrouter": "devicon-reactrouter-plain",
+}
