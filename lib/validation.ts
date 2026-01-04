@@ -62,7 +62,7 @@ export const AskQuestionSchema = z.object({
             z
                 .string()
                 .min(1, { message: "Tag must have at least 1 character." })
-                .max(15, { message: "Tag must not exceed 15 characters." }),
+                .max(15, { message: "Tag must not exceed 15 characters." })
         )
         .min(1, { message: "Add at least one tag." })
         .max(3, { message: "Maximum of 3 tags." }),
