@@ -1,3 +1,4 @@
+import HomeFilter from "@/components/filter/HomeFilter";
 import LocalSearch from "@/components/search/LocalSearch";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
@@ -54,7 +55,7 @@ const questions = [
         tags: [
             {
                 _id: "1",
-                name: "React",
+                name: "Next.js",
             },
             {
                 _id: "2",
@@ -78,15 +79,18 @@ interface SearchParams {
 }
 
 const Home = async ({ searchParams }: SearchParams) => {
-    const { query = "" } = await searchParams;
+    const { query = "", filter = "" } = await searchParams;
 
-    // const { data } = await axios.get("/api/questions", {
-    //     query: {search: query}
-    // })
+    const filterQuesitons = questions.filter((question) => {
+        const matchesQuery = question.title
+            .toLowerCase()
+            .includes(query.toLowerCase());
 
-    const filterQuesitons = questions.filter((question) =>
-        question.title.toLowerCase().includes(query?.toLowerCase())
-    );
+        const matchesFilter = filter
+            ? question.tags[0].name.toLowerCase() === filter.toLowerCase()
+            : true;
+        return matchesQuery && matchesFilter;
+    });
 
     return (
         <>
@@ -107,6 +111,7 @@ const Home = async ({ searchParams }: SearchParams) => {
                     otherClasses="flex-1"
                 />
             </section>
+            <HomeFilter />
             <div className="mt-10 flex w-full flex-col gap-6">
                 {filterQuesitons.map((questions) => (
                     <h1 key={questions._id}>{questions.title}</h1>

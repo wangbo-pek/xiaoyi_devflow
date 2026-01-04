@@ -21,6 +21,13 @@ const LocalSearch = ({ route, imgSrc, placeholder, otherClasses }: Props) => {
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
+            const currentQuery = searchParams.get("query") || "";
+
+            // 如果当前URL中的 query 和 searchQuery 相同，跳过更新
+            if (currentQuery === searchQuery) {
+                return;
+            }
+
             if (searchQuery) {
                 const newUrl = formUrlQuery({
                     params: searchParams.toString(),
