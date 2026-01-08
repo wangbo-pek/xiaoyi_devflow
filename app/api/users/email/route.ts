@@ -1,0 +1,35 @@
+import User from "@/database/user.model";
+import handleError from "@/lib/handlers/error";
+import { ValidationError } from "@/lib/http-errors";
+import { UserSchema } from "@/lib/validation";
+import { APIErrorResponse } from "@/types/global";
+import { NextResponse } from "next/server";
+
+// POST /api/users/email
+export async function POST(request: Request) {
+    const { email } = await request.json();
+
+    try {
+        const validatedData = UserSchema.partial().safeParse({ email });
+        if (!validatedData.success) {
+            const formattedErrors: Record<string, string[]> = {};
+            validatedData.error.issues.forEach((issue) => {
+                const path = issue.path.join(".");
+                if (!formattedErrors[path]) {
+                    formattedErrors[path] = [];
+                }
+                formattedErrors[path].push(issue.message);
+            });
+            throw new ValidationError(formattedErrors);
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) throw new Notification("User");
+        return NextResponse.json(
+            { success: true, data: user },
+            { status: 200 }
+        );
+    } catch (error) {
+        return handleError(error, "api") as APIErrorResponse;
+    }
+}
