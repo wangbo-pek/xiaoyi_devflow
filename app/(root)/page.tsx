@@ -3,7 +3,18 @@ import HomeFilter from "@/components/filter/HomeFilter";
 import LocalSearch from "@/components/search/LocalSearch";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
+// import { api } from "@/lib/api";
+// import handleError from "@/lib/handlers/error";
+// import { APIErrorResponse } from "@/types/global";
 import Link from "next/link";
+
+// const test = async () => {
+//     try {
+//         return await api.users.getAll();
+//     } catch (error) {
+//         return handleError(error, "api") as APIErrorResponse;
+//     }
+// };
 
 const questions = [
     {
@@ -48,6 +59,9 @@ interface SearchParams {
 }
 
 const Home = async ({ searchParams }: SearchParams) => {
+    // const users = await test();
+    // console.log(users);
+
     const { query = "", filter = "" } = await searchParams;
 
     const filterQuesitons = questions.filter((question) => {
