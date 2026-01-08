@@ -1,26 +1,26 @@
-import User from "@/database/user.model";
+import Account from "@/database/account.model";
 import handleError from "@/lib/handlers/error";
-import { NotFoundError, ValidationError } from "@/lib/http-errors";
+import { NotFoundError } from "@/lib/http-errors";
 import dbConnect from "@/lib/mongoose";
 import { AccountSchema } from "@/lib/validation";
 import { APIErrorResponse } from "@/types/global";
 import { NextResponse } from "next/server";
 
-// GET /api/users/[id]
+// GET /api/account/[id]
 export async function GET(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { id } = await params;
 
-    if (!id) throw new NotFoundError("User");
+    if (!id) throw new NotFoundError("Account");
 
     try {
         await dbConnect();
-        const user = await User.findById(id);
-        if (!user) throw new NotFoundError("User");
+        const account = await Account.findById(id);
+        if (!account) throw new NotFoundError("Account");
         return NextResponse.json(
-            { success: true, data: user },
+            { success: true, data: account },
             { status: 200 }
         );
     } catch (error) {
@@ -28,20 +28,20 @@ export async function GET(
     }
 }
 
-// DELETE /api/users/[id]
+// DELETE /api/account/[id]
 export async function DELETE(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { id } = await params;
-    if (!id) throw new NotFoundError("User");
+    if (!id) throw new NotFoundError("Account");
 
     try {
         await dbConnect();
-        const user = await User.findByIdAndDelete(id);
-        if (!user) throw new NotFoundError("User");
+        const account = await Account.findByIdAndDelete(id);
+        if (!account) throw new NotFoundError("Account");
         return NextResponse.json(
-            { success: true, data: user },
+            { success: true, data: account },
             { status: 200 }
         );
     } catch (error) {
@@ -49,34 +49,24 @@ export async function DELETE(
     }
 }
 
-// PUT /api/users/[id]
+// PUT /api/account/[id]
 export async function PUT(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { id } = await params;
-    if (!id) throw new NotFoundError("User");
+    if (!id) throw new NotFoundError("Account");
     try {
         await dbConnect();
         const body = await request.json();
         const validatedData = AccountSchema.partial().safeParse(body);
-
-        if (!validatedData.success) {
-            const formattedErrors: Record<string, string[]> = {};
-            validatedData.error.issues.forEach((issue) => {
-                const path = issue.path.join(".");
-                if (!formattedErrors[path]) {
-                    formattedErrors[path] = [];
-                }
-                formattedErrors[path].push(issue.message);
-            });
-
-            throw new ValidationError(formattedErrors);
-        }
-
-        const updateAccount = await User.findByIdAndUpdate(id, validatedData, {
-            new: true,
-        });
+        const updateAccount = await Account.findByIdAndUpdate(
+            id,
+            validatedData,
+            {
+                new: true,
+            }
+        );
 
         if (!updateAccount) throw new NotFoundError("Account");
         return NextResponse.json(
