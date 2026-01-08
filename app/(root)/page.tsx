@@ -43,7 +43,6 @@ const questions = [
     },
 ];
 
-// query='react
 interface SearchParams {
     searchParams: Promise<{ [key: string]: string }>;
 }
