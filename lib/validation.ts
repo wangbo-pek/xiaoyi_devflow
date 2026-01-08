@@ -2,110 +2,111 @@ import { z } from "zod";
 
 export const SignInSchema = z.object({
     email: z
-        .email({ message: "Please provide a valid email address." })
-        .min(1, { message: "Email is required." }),
+        .email({ error: "Please provide a valid email address." })
+        .min(1, { error: "Email is required." }),
 
     password: z
         .string()
-        .min(8, { message: "Password must be at least 8 characters." })
-        .max(64, { message: "Password must be at most 64 characters." }),
+        .min(8, { error: "Password must be at least 8 characters." })
+        .max(64, { error: "Password must be at most 64 characters." }),
 });
 
 export const SignUpSchema = z.object({
     username: z
         .string()
-        .min(3, { message: "Username must be at least 3 characters long." })
-        .max(30, { message: "Username cannot exceed 30 characters." })
+        .min(3, { error: "Username must be at least 3 characters long." })
+        .max(30, { error: "Username cannot exceed 30 characters." })
         .regex(/^[a-zA-Z0-9_]+$/, {
-            message:
-                "Username can only contain letters, numbers, and underscores.",
+            error: "Username can only contain letters, numbers, and underscores.",
         }),
 
     name: z
         .string()
-        .min(1, { message: "Name is required." })
-        .max(50, { message: "Name cannot exceed 50 characters." })
+        .min(1, { error: "Name is required." })
+        .max(50, { error: "Name cannot exceed 50 characters." })
         .regex(/^[a-zA-Z\s]+$/, {
-            message: "Name can only contain letters and spaces.",
+            error: "Name can only contain letters and spaces.",
         }),
 
     email: z
-        .email({ message: "Please provide a valid email address." })
-        .min(1, { message: "Email is required." }),
+        .email({ error: "Please provide a valid email address." })
+        .min(1, { error: "Email is required." }),
 
     password: z
         .string()
-        .min(6, { message: "Password must be at least 6 characters long." })
-        .max(100, { message: "Password cannot exceed 100 characters." })
+        .min(6, { error: "Password must be at least 6 characters long." })
+        .max(100, { error: "Password cannot exceed 100 characters." })
         .regex(/[A-Z]/, {
-            message: "Password must contain at least one uppercase letter.",
+            error: "Password must contain at least one uppercase letter.",
         })
         .regex(/[a-z]/, {
-            message: "Password must contain at least one lowercase letter.",
+            error: "Password must contain at least one lowercase letter.",
         })
         .regex(/[0-9]/, {
-            message: "Password must contain at least one number.",
+            error: "Password must contain at least one number.",
         })
         .regex(/[^a-zA-Z0-9]/, {
-            message: "Password must contain at least one special character.",
+            error: "Password must contain at least one special character.",
         }),
 });
 
 export const AskQuestionSchema = z.object({
     title: z
         .string()
-        .min(5, { message: "Title must be at least 5 characters." })
-        .max(130, { message: "Title musn't be longer then 130 characters." }),
-    content: z.string().min(100, { message: "Minimum of 100 characters." }),
+        .min(5, { error: "Title must be at least 5 characters." })
+        .max(130, { error: "Title musn't be longer then 130 characters." }),
+    content: z.string().min(100, { error: "Minimum of 100 characters." }),
     tags: z
         .array(
             z
                 .string()
-                .min(1, { message: "Tag must have at least 1 character." })
-                .max(15, { message: "Tag must not exceed 15 characters." })
+                .min(1, { error: "Tag must have at least 1 character." })
+                .max(15, { error: "Tag must not exceed 15 characters." })
         )
-        .min(1, { message: "Add at least one tag." })
-        .max(3, { message: "Maximum of 3 tags." }),
+        .min(1, { error: "Add at least one tag." })
+        .max(3, { error: "Maximum of 3 tags." }),
 });
 
 export const UserSchema = z.object({
-    name: z.string().min(1, { message: "Name is required" }),
+    name: z.string().min(1, { error: "Name is required" }),
     username: z
-        .string({ message: "Username is required" })
-        .min(3, { message: "Username must be at least 3 characters" }),
+        .string({ error: "Username is required" })
+        .min(3, { error: "Username must be at least 3 characters" }),
     email: z.email({
-        message: "Email is required",
+        error: "Email is required",
     }),
     bio: z.string().optional(),
-    image: z.url({ message: "Invalid image URL" }).optional(),
+    image: z.url({ error: "Invalid image URL" }).optional(),
     location: z.string().optional(),
-    portfolio: z.url({ message: "Invalid portfolio URL" }).optional(),
+    portfolio: z.url({ error: "Invalid portfolio URL" }).optional(),
     reputation: z.number().optional(),
 });
 
 export const AccountSchema = z.object({
     userId: z.string(),
-    name: z.string().min(1, "Name is required"),
-    image: z.url("Invalid image URL").optional(),
+    name: z.string().min(1, { error: "Name is required" }),
+    image: z.url({ error: "Invalid image URL" }).optional(),
     password: z
         .string()
-        .min(6, { message: "Password must be at least 6 characters long." })
-        .max(100, { message: "Password cannot exceed 100 characters." })
+        .min(6, { error: "Password must be at least 6 characters long." })
+        .max(100, { error: "Password cannot exceed 100 characters." })
         .regex(/[A-Z]/, {
-            message: "Password must contain at least one uppercase letter.",
+            error: "Password must contain at least one uppercase letter.",
         })
         .regex(/[a-z]/, {
-            message: "Password must contain at least one lowercase letter.",
+            error: "Password must contain at least one lowercase letter.",
         })
         .regex(/[0-9]/, {
-            message: "Password must contain at least one number.",
+            error: "Password must contain at least one number.",
         })
         .regex(/[^a-zA-Z0-9]/, {
-            message: "Password must contain at least one special character.",
+            error: "Password must contain at least one special character.",
         })
         .optional(),
-    provider: z.string().min(1, "Provider is required"),
-    providerAccountId: z.string().min(1, "Provider account ID is required"),
+    provider: z.string().min(1, { error: "Provider is required" }),
+    providerAccountId: z
+        .string()
+        .min(1, { error: "Provider account ID is required" }),
 });
 
 export const SignInWithOAuthSchema = z.object({
@@ -144,7 +145,7 @@ export const IncrementViewsSchema = z.object({
 });
 
 export const AnswerSchema = z.object({
-    content: z.string().min(100, { message: "Minimum of 100 characters." }),
+    content: z.string().min(100, { error: "Minimum of 100 characters." }),
 });
 
 export const AnswerServerSchema = AnswerSchema.extend({
@@ -159,13 +160,13 @@ export const AIAnswerSchema = z.object({
     question: z
         .string()
         .min(5, {
-            message: "Question title must be at least 5 characters.",
+            error: "Question title must be at least 5 characters.",
         })
         .max(130, {
-            message: "Question title musn't be longer then 130 characters.",
+            error: "Question title musn't be longer then 130 characters.",
         }),
     content: z.string().min(100, {
-        message: "Question description must have Minimum of 100 characters.",
+        error: "Question description must have Minimum of 100 characters.",
     }),
     userAnswer: z.string().optional(),
 });
@@ -173,10 +174,10 @@ export const AIAnswerSchema = z.object({
 export const CreateVoteSchema = z.object({
     targetId: z.string().min(1, "Target ID is required"),
     targetType: z.enum(["question", "answer"], {
-        message: "Invalid target type. Must be 'question' or 'answer'.",
+        error: "Invalid target type. Must be 'question' or 'answer'.",
     }),
     voteType: z.enum(["upvote", "downvote"], {
-        message: "Invalid vote type. Must be 'upvote' or 'downvote'.",
+        error: "Invalid vote type. Must be 'upvote' or 'downvote'.",
     }),
 });
 
@@ -241,16 +242,16 @@ export const ProfileSchema = z.object({
     name: z
         .string()
         .min(3, {
-            message: "Name must be at least 3 characters.",
+            error: "Name must be at least 3 characters.",
         })
-        .max(130, { message: "Name musn't be longer then 130 characters." }),
+        .max(130, { error: "Name musn't be longer then 130 characters." }),
     username: z
         .string()
-        .min(3, { message: "username musn't be longer then 100 characters." }),
-    portfolio: z.url({ message: "Please provide valid URL" }),
-    location: z.string().min(3, { message: "Please provide proper location" }),
+        .min(3, { error: "username musn't be longer then 100 characters." }),
+    portfolio: z.url({ error: "Please provide valid URL" }),
+    location: z.string().min(3, { error: "Please provide proper location" }),
     bio: z.string().min(3, {
-        message: "Bio must be at least 3 characters.",
+        error: "Bio must be at least 3 characters.",
     }),
 });
 
@@ -258,16 +259,16 @@ export const UpdateUserSchema = z.object({
     name: z
         .string()
         .min(3, {
-            message: "Name must be at least 3 characters.",
+            error: "Name must be at least 3 characters.",
         })
-        .max(130, { message: "Name musn't be longer then 130 characters." }),
+        .max(130, { error: "Name musn't be longer then 130 characters." }),
     username: z
         .string()
-        .min(3, { message: "username musn't be longer then 100 characters." }),
-    portfolio: z.url({ message: "Please provide valid URL" }),
-    location: z.string().min(3, { message: "Please provide proper location" }),
+        .min(3, { error: "username musn't be longer then 100 characters." }),
+    portfolio: z.url({ error: "Please provide valid URL" }),
+    location: z.string().min(3, { error: "Please provide proper location" }),
     bio: z.string().min(3, {
-        message: "Bio must be at least 3 characters.",
+        error: "Bio must be at least 3 characters.",
     }),
 });
 
