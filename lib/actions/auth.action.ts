@@ -42,15 +42,18 @@ export async function signUpWithCredentials(
             session,
         });
         await Account.create(
-            {
-                userId: newUser._id,
-                name,
-                provider: "credentials",
-                providerAccountId: email,
-                password: hashPassword,
-            },
+            [
+                {
+                    userId: newUser._id,
+                    name,
+                    provider: "credentials",
+                    providerAccountId: email,
+                    password: hashPassword,
+                },
+            ],
             { session }
         );
+        await session.commitTransaction();
         await signIn("credentials", { email, password, redirect: false });
         return { success: true };
     } catch (error) {

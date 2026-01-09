@@ -1,6 +1,6 @@
 "use server";
 
-import { ZodError, ZodSchema } from "zod";
+import { ZodError, ZodType } from "zod";
 import { UnauthorizedError, ValidationError } from "../http-errors";
 import { Session } from "next-auth";
 import { auth } from "@/auth";
@@ -8,14 +8,14 @@ import dbConnect from "../mongoose";
 
 type ActionOptions<T> = {
     params?: T;
-    schema: ZodSchema<T>;
+    schema: ZodType<T>;
     authorize?: boolean;
 };
 
-// 1. 检查参数是否符合schema
+// 1. 检查 params 是否符合schema
 // 2. 检查是否授权
 // 3. 连接数据库
-// 4. 返回参数和session
+// 4. 返回 params 和session
 
 async function action<T>({
     params,

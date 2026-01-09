@@ -11,6 +11,8 @@ export interface IQuestion {
     author: Types.ObjectId;
 }
 
+export interface IQuestionDoc extends IQuestion, Document {}
+
 const QuestionSchema = new Schema<IQuestion>(
     {
         title: { type: String, required: true },
