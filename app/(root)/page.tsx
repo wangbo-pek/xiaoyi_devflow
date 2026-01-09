@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import QuestionCard from "@/components/cards/QuestionCard";
 import HomeFilter from "@/components/filter/HomeFilter";
 import LocalSearch from "@/components/search/LocalSearch";
@@ -7,14 +8,6 @@ import ROUTES from "@/constants/routes";
 // import handleError from "@/lib/handlers/error";
 // import { APIErrorResponse } from "@/types/global";
 import Link from "next/link";
-
-// const test = async () => {
-//     try {
-//         return await api.users.getAll();
-//     } catch (error) {
-//         return handleError(error, "api") as APIErrorResponse;
-//     }
-// };
 
 const questions = [
     {
@@ -61,6 +54,8 @@ interface SearchParams {
 const Home = async ({ searchParams }: SearchParams) => {
     // const users = await test();
     // console.log(users);
+    const session = await auth();
+    console.log("Session: ", session);
 
     const { query = "", filter = "" } = await searchParams;
 
