@@ -1,29 +1,33 @@
 "use client";
 import React from "react";
 import { SheetClose } from "@/components/ui/sheet";
-import { sidebarLinks } from "@/constants"
+import { sidebarLinks } from "@/constants";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-
-const NavLinks = ({ isMobileNav = false }: { isMobileNav?: boolean }) => {
-
-    const pathname = usePathname()
+const NavLinks = ({
+    isMobileNav = false,
+    userId,
+}: {
+    isMobileNav?: boolean;
+    userId?: string;
+}) => {
+    const pathname = usePathname();
 
     return (
         <>
             {sidebarLinks.map((item) => {
-                const isActive = (pathname.includes(item.route) && item.route.length > 1) || pathname === item.route
+                const isActive =
+                    (pathname.includes(item.route) && item.route.length > 1) ||
+                    pathname === item.route;
 
-                const userId = 1
-
-                if (item.route === '/profile') {
+                if (item.route === "/profile") {
                     if (userId) {
-                        item.route = `${item.route}/${userId}`
+                        item.route = `${item.route}/${userId}`;
                     } else {
-                        return null
+                        return null;
                     }
                 }
 
@@ -31,39 +35,43 @@ const NavLinks = ({ isMobileNav = false }: { isMobileNav?: boolean }) => {
                     <Link
                         href={item.route}
                         key={item.label}
-                        className={cn(isActive
-                            ? 'primary-gradient rounded-lg text-light-900'
-                            : 'text-dark300_light900',
-                            'flex items-cent justify-start gap-4 bg-transparent p-4')}
+                        className={cn(
+                            isActive
+                                ? "primary-gradient rounded-lg text-light-900"
+                                : "text-dark300_light900",
+                            "flex items-cent justify-start gap-4 bg-transparent p-4"
+                        )}
                     >
                         <Image
                             src={item.imgURL}
                             alt={item.label}
                             width={20}
                             height={20}
-                            className={cn({ 'inverted-colors': !isActive })}
+                            className={cn({ "inverted-colors": !isActive })}
                         />
-                        <p className={cn(isActive
-                            ? 'base-bold'
-                            : 'base-medium',
-                            !isMobileNav && 'max-lg:hidden'
-                        )}>{item.label}</p>
+                        <p
+                            className={cn(
+                                isActive ? "base-bold" : "base-medium",
+                                !isMobileNav && "max-lg:hidden"
+                            )}
+                        >
+                            {item.label}
+                        </p>
                     </Link>
-                )
+                );
 
-                return isMobileNav
-                    ? (
-                        <SheetClose asChild key={item.route}>
-                            {LinkComponent}
-                        </SheetClose>
-                    ) : (
-                        <React.Fragment key={item.route}>
-                            {LinkComponent}
-                        </React.Fragment>
-                    )
+                return isMobileNav ? (
+                    <SheetClose asChild key={item.route}>
+                        {LinkComponent}
+                    </SheetClose>
+                ) : (
+                    <React.Fragment key={item.route}>
+                        {LinkComponent}
+                    </React.Fragment>
+                );
             })}
         </>
-    )
-}
+    );
+};
 
-export default NavLinks
+export default NavLinks;
