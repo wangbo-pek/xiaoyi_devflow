@@ -1,13 +1,22 @@
 "use server";
 
 import action from "../handlers/action";
-import { AskQuestionSchema } from "../validation";
+import {
+    AskQuestionSchema,
+    EditQuestionSchema,
+    GetQuestionSchema,
+} from "../validation";
 import handleError from "../handlers/error";
 import mongoose from "mongoose";
 import Question from "@/database/question.model";
-import Tag from "@/database/tag.model";
+import Tag, { ITagDoc } from "@/database/tag.model";
 import TagQuestion from "@/database/tag-question.model";
 import { ActionResponse, ErrorResponse, Question as Que } from "@/types/global";
+
+// 正则转换辅助函数
+function escapeRegExp(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 
 export async function createQuestion(
     params: CreateQuestionParams
@@ -43,8 +52,8 @@ export async function createQuestion(
         const tagQuestionDocuments = [];
         for (const tag of tags) {
             const existingTag = await Tag.findOneAndUpdate(
-                { name: { $regex: new RegExp(`^${tag}$`, "i") } },
-                { $setOnInsert: { name: tag }, $inc: { quesion: 1 } },
+                { name: { $regex: new RegExp(`^${escapeRegExp(tag)}$`, "i") } },
+                { $setOnInsert: { name: tag }, $inc: { question: 1 } },
                 { upsert: true, new: true, session }
             );
 
@@ -59,7 +68,7 @@ export async function createQuestion(
 
         await Question.findByIdAndUpdate(
             question._id,
-            { $push: { tag: { $each: tagIds } } },
+            { $push: { tags: { $each: tagIds } } },
             { session }
         );
 
@@ -70,5 +79,138 @@ export async function createQuestion(
         return handleError(error) as ErrorResponse;
     } finally {
         session.endSession();
+    }
+}
+
+export async function editQuestion(
+    params: EditQuestionParams
+): Promise<ActionResponse<Que>> {
+    const validationResult = await action({
+        params,
+        schema: EditQuestionSchema,
+        authorize: true,
+    });
+
+    if (validationResult instanceof Error) {
+        return handleError(validationResult) as ErrorResponse;
+    }
+
+    const { title, content, tags, questionId } = validationResult.params!;
+    const userId = validationResult.session?.user?.id;
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        const question = await Question.findById(questionId).populate("tags");
+        if (!question) {
+            throw new Error("Question not found");
+        }
+
+        if (question.author.toString() !== userId) {
+            throw new Error("Unauthorized");
+        }
+
+        if (question.tile !== title || question.content !== content) {
+            question.title = title;
+            question.content = content;
+            await question.save({ session });
+        }
+
+        const tagsToAdd = tags.filter(
+            (tag) =>
+                !question.tags.some(
+                    (t: ITagDoc) => t.name.toLowerCase() === tag.toLowerCase()
+                )
+        );
+        const tagsToRemove = question.tags.filter(
+            (tag: ITagDoc) =>
+                !tags.some((t) => t.toLowerCase() === tag.name.toLowerCase())
+        );
+
+        const newTagDocuments = [];
+        if (tagsToAdd.length > 0) {
+            for (const tag of tagsToAdd) {
+                const existingTag = await Tag.findOneAndUpdate(
+                    {
+                        name: {
+                            $regex: new RegExp(`^${escapeRegExp(tag)}$`, "i"),
+                        },
+                    },
+                    { $setOnInsert: { name: tag }, $inc: { question: 1 } },
+                    { upsert: true, new: true, session }
+                );
+
+                if (existingTag) {
+                    newTagDocuments.push({
+                        tag: existingTag._id,
+                        question: questionId,
+                    });
+                }
+
+                question.tags.push(existingTag);
+            }
+        }
+
+        if (tagsToRemove.length > 0) {
+            const tagIdsToRemove = tagsToRemove.map((tag: ITagDoc) => tag._id);
+
+            await Tag.updateMany(
+                { _id: { $in: tagIdsToRemove } },
+                { $inc: { question: -1 } },
+                { session }
+            );
+
+            await TagQuestion.deleteMany(
+                { tag: { $in: tagIdsToRemove }, question: questionId },
+                { session }
+            );
+
+            question.tags = question.tags.filter(
+                (tagId: mongoose.Types.ObjectId) =>
+                    !tagsToRemove.includes(tagId)
+            );
+        }
+
+        if (newTagDocuments.length > 0) {
+            await TagQuestion.insertMany(newTagDocuments, { session });
+        }
+
+        await question.save({ session });
+        await session.commitTransaction();
+        return { success: true, data: JSON.parse(JSON.stringify(question)) };
+    } catch (error) {
+        await session.abortTransaction();
+        return handleError(error) as ErrorResponse;
+    } finally {
+        await session.endSession();
+    }
+}
+
+export async function getQuestion(
+    params: GetQuestionParams
+): Promise<ActionResponse<Que>> {
+    const validationResult = await action({
+        params,
+        schema: GetQuestionSchema,
+        authorize: true,
+    });
+
+    if (validationResult instanceof Error) {
+        return handleError(validationResult) as ErrorResponse;
+    }
+
+    const { questionId } = validationResult.params!;
+
+    try {
+        const question = await Question.findById(questionId).populate("tags");
+
+        if (!question) {
+            throw new Error("Question not found");
+        }
+
+        return { success: true, data: JSON.parse(JSON.stringify(question)) };
+    } catch (error) {
+        return handleError(error) as ErrorResponse;
     }
 }
