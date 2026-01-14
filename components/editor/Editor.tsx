@@ -27,6 +27,7 @@ import {
     codeBlockPlugin,
     codeMirrorPlugin,
     diffSourcePlugin,
+    CodeToggle,
 } from "@mdxeditor/editor";
 import "./dark-editor.css";
 import { basicDark } from "cm6-theme-basic-dark";
@@ -108,6 +109,7 @@ const Editor = ({ value, editorRef, fieldChange, ...props }: Props) => {
                                             <InsertImage />
                                             <Separator />
 
+                                            <CodeToggle />
                                             <InsertTable />
                                             <InsertThematicBreak />
                                             <InsertCodeBlock />

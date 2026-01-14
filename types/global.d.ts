@@ -37,3 +37,11 @@ type ErrorResponse = ActionResponse<undefined> & { success: false };
 
 type APIErrorResponse = NextResponse<ErrorResponse>;
 type APIResponse<T = null> = NextResponse<SuccessResponse<T> | ErrorResponse>;
+
+interface RouteParams {
+    params: Promise<Record<string, string>>;
+    seacheParams: Promise<Record<string, string>>;
+}
+// tips: defference between params and searchParams
+// params: /questions/12
+// searchParams: /questions?tag=javascript

@@ -37,7 +37,7 @@ const TagCard = ({
             >
                 <div className="flex-center space-x-2">
                     <i className={`${iconClass} text-sm`}></i>
-                    <span>{name}</span>
+                    <span>{name.toUpperCase()}</span>
                 </div>
                 {remove && (
                     <Image
