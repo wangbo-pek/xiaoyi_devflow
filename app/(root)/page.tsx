@@ -3,63 +3,33 @@ import HomeFilter from "@/components/filter/HomeFilter";
 import LocalSearch from "@/components/search/LocalSearch";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
+import { getQuestions } from "@/lib/actions/question.action";
 import Link from "next/link";
-
-const questions = [
-    {
-        _id: "1",
-        title: "I want to learn React, can anyone help me?",
-        tags: [
-            { _id: "1", name: "React" },
-            { _id: "2", name: "JavaScript" },
-        ],
-        author: {
-            _id: "1",
-            name: "John Doe",
-            image: "https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-174669.jpg?semt=ais_hybrid&w=740&q=80",
-        },
-        upvotes: 10,
-        answers: 5,
-        views: 87,
-        createdAt: new Date("2021-09-02"),
-    },
-    {
-        _id: "2",
-        title: "I want to learn Next.js. Seriously",
-        tags: [
-            { _id: "1", name: "React" },
-            { _id: "2", name: "JavaScript" },
-            { _id: "3", name: "Next.js" },
-        ],
-        author: {
-            _id: "1",
-            name: "John Doe",
-            image: "https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-174669.jpg?semt=ais_hybrid&w=740&q=80",
-        },
-        upvotes: 10,
-        answers: 5,
-        views: 87,
-        createdAt: new Date("2021-09-02"),
-    },
-];
 
 interface SearchParams {
     searchParams: Promise<{ [key: string]: string }>;
 }
 
 const Home = async ({ searchParams }: SearchParams) => {
-    const { query = "", filter = "" } = await searchParams;
-
-    const filterQuesitons = questions.filter((question) => {
-        const matchesQuery = question.title
-            .toLowerCase()
-            .includes(query.toLowerCase());
-
-        const matchesFilter = filter
-            ? question.tags[0].name.toLowerCase() === filter.toLowerCase()
-            : true;
-        return matchesQuery && matchesFilter;
+    const { page, pageSize, query, filter } = await searchParams;
+    const { success, data, error } = await getQuestions({
+        page: Number(page) || 1,
+        pageSize: Number(pageSize) || 10,
+        query: query || "",
+        filter: filter || "",
     });
+    const { questions } = data || {};
+
+    // const filterQuesitons = questions.filter((question) => {
+    //     const matchesQuery = question.title
+    //         .toLowerCase()
+    //         .includes(query.toLowerCase());
+
+    //     const matchesFilter = filter
+    //         ? question.tags[0].name.toLowerCase() === filter.toLowerCase()
+    //         : true;
+    //     return matchesQuery && matchesFilter;
+    // });
 
     return (
         <>
@@ -81,11 +51,30 @@ const Home = async ({ searchParams }: SearchParams) => {
                 />
             </section>
             <HomeFilter />
-            <div className="mt-10 flex w-full flex-col gap-6">
-                {filterQuesitons.map((question) => (
-                    <QuestionCard key={question._id} question={question} />
-                ))}
-            </div>
+            {success ? (
+                <div className="mt-10 flex w-full flex-col gap-6">
+                    {questions && questions.length > 0 ? (
+                        questions.map((question) => (
+                            <QuestionCard
+                                key={question._id}
+                                question={question}
+                            />
+                        ))
+                    ) : (
+                        <div className="mt-10 flex w-full items-center justify-center">
+                            <p className="text-dark400_light700">
+                                No Question found
+                            </p>
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <div className="mt-10 flex w-full items-center justify-center">
+                    <p className="text-dark400_light700">
+                        {error?.message || "Failed to fetch questions"}
+                    </p>
+                </div>
+            )}
         </>
     );
 };
