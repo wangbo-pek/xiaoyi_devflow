@@ -246,7 +246,7 @@ export async function getQuestions(
     if (query) {
         filterQuery.$or = [
             { title: { $regex: new RegExp(query, "i") } },
-            { content: { $regex: new RegExp(query, "1") } },
+            { content: { $regex: new RegExp(query, "i") } },
         ];
     }
 
