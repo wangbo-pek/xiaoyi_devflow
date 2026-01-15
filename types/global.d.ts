@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 interface Tag {
     _id: string;
     name: string;
+    questions: number;
 }
 
 interface Author {
@@ -41,7 +42,7 @@ type APIResponse<T = null> = NextResponse<SuccessResponse<T> | ErrorResponse>;
 
 interface RouteParams {
     params: Promise<Record<string, string>>;
-    seacheParams: Promise<Record<string, string>>;
+    searchParams: Promise<Record<string, string>>;
 }
 // tips: defference between params and searchParams
 // params: /questions/12

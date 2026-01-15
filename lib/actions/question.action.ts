@@ -59,7 +59,7 @@ export async function createQuestion(
         for (const tag of tags) {
             const existingTag = await Tag.findOneAndUpdate(
                 { name: { $regex: new RegExp(`^${escapeRegExp(tag)}$`, "i") } },
-                { $setOnInsert: { name: tag }, $inc: { question: 1 } },
+                { $setOnInsert: { name: tag }, $inc: { questions: 1 } },
                 { upsert: true, new: true, session }
             );
 
@@ -143,7 +143,7 @@ export async function editQuestion(
                             $regex: new RegExp(`^${escapeRegExp(tag)}$`, "i"),
                         },
                     },
-                    { $setOnInsert: { name: tag }, $inc: { question: 1 } },
+                    { $setOnInsert: { name: tag }, $inc: { questions: 1 } },
                     { upsert: true, new: true, session }
                 );
 
@@ -163,7 +163,7 @@ export async function editQuestion(
 
             await Tag.updateMany(
                 { _id: { $in: tagIdsToRemove } },
-                { $inc: { question: -1 } },
+                { $inc: { questions: -1 } },
                 { session }
             );
 
