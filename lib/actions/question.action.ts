@@ -18,6 +18,11 @@ import {
     PaginatedSearchParams,
     Question as TypeQuestion,
 } from "@/types/global";
+import {
+    CreateQuestionParams,
+    EditQuestionParams,
+    GetQuestionParams,
+} from "@/types/action";
 
 // 正则转换辅助函数
 function escapeRegExp(str: string): string {
@@ -211,7 +216,9 @@ export async function getQuestion(
     const { questionId } = validationResult.params!;
 
     try {
-        const question = await Question.findById(questionId).populate("tags");
+        const question = await Question.findById(questionId)
+            .populate("tags")
+            .populate("author", "_id name iamge");
 
         if (!question) {
             throw new Error("Question not found");
